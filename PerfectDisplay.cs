@@ -13,11 +13,14 @@ namespace PerfectionDisplay
     {
         TextMeshPro scoreMesh;
         ScoreController scoreController;
-
-        int[] scoreRanges = { 100, 90, 50 };
-        string[] colors = { "blue", "green", "yellow", "orange", "red" };
+        public static Vector3 displayPosition = new Vector3(0, 2.3f, 7f);
+        public static int[] scoreRanges = { 100, 90, 50 };
+        public static string[] colors = { "blue", "green", "yellow", "orange", "red" };
         int[] scoreCount;
-        int misses;
+        int misses = 0;
+        int notes = 0;
+        public static bool showNumbers = true;
+        public static bool showPercent = true;
         IEnumerator WaitForLoad()
         {
             bool loaded = false;
@@ -45,7 +48,7 @@ namespace PerfectionDisplay
             scoreMesh.color = Color.white;
             scoreMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
             scoreMesh.alignment = TextAlignmentOptions.Center;
-            scoreMesh.rectTransform.position = Plugin.scoreCounterPosition;
+            scoreMesh.rectTransform.position = displayPosition;
             if (scoreController != null)
             {
                 scoreController.noteWasMissedEvent += Miss;
@@ -56,10 +59,12 @@ namespace PerfectionDisplay
         public void Miss(NoteData data, int c)
         {
             misses++;
+            notes++;
             UpdateText();
         }
         public void Cut(NoteData data, NoteCutInfo info, int combo)
         {
+            notes++;
             bool didDone = false;
             info.afterCutSwingRatingCounter.didFinishEvent += c => {
                 if (didDone) return;
@@ -83,13 +88,30 @@ namespace PerfectionDisplay
         public void UpdateText()
         {
             String text = "";
-            for(int i = 0; i < scoreRanges.Length; i++)
+            if (showNumbers)
             {
-                text += "<color=\""+colors[i] +"\">"+">"+scoreRanges[i] + "-" + scoreCount[i] + "<color=\"black\">|";
+                for (int i = 0; i < scoreRanges.Length; i++)
+                {
+                    text += "<color=\"" + colors[i] + "\">" + ">" + scoreRanges[i] + "-" + scoreCount[i] + "<color=\"black\">|";
+                }
+                text += "<color=\"" + colors[scoreRanges.Length] + "\">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + scoreCount[scoreRanges.Length] + "<color=\"black\">|";
+                text += "<color=\"" + colors[scoreRanges.Length + 1] + "\">" + "MISS-" + misses +"\n";
             }
-            text += "<color=\"" + colors[scoreRanges.Length] + "\">" + "<" + scoreRanges[scoreRanges.Length-1] + "-" + scoreCount[scoreRanges.Length] + "<color=\"black\">|";
-            text += "<color=\"" + colors[scoreRanges.Length + 1] + "\">" + "MISS-" +misses;
+            if (showPercent)
+            {
+                for (int i = 0; i < scoreRanges.Length; i++)
+                {
+                    text += "<color=\"" + colors[i] + "\">" + ">" + scoreRanges[i] + "-" + GetPercent(scoreCount[i]) + "%<color=\"black\">|";
+                }
+                text += "<color=\"" + colors[scoreRanges.Length] + "\">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + GetPercent(scoreCount[scoreRanges.Length]) + "%<color=\"black\">|";
+                text += "<color=\"" + colors[scoreRanges.Length + 1] + "\">" + "MISS-" + GetPercent(misses) + "%";
+            }
             scoreMesh.text = text;
+        }
+        private String GetPercent(int hits)
+        {
+            if (hits == 0) return "0";
+            return ((hits * 1f / notes) * 100).ToString("0.0");
         }
     }
 }
