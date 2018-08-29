@@ -46,7 +46,21 @@ namespace PerfectionDisplay
                 var rangeString = ModPrefs.GetString("PerfectionDisplay", "Colors");
                 PerfectDisplay.colors = rangeString.Split(',');
             }
-            if (PerfectDisplay.scoreRanges.Length+2 != PerfectDisplay.colors.Length) Console.WriteLine("[PerfectionDisplay] Config error - colors should have 2 more colors than there are score ranges");
+            if (PerfectDisplay.scoreRanges.Length + 2 > PerfectDisplay.colors.Length)
+            {
+                Console.WriteLine("[PerfectionDisplay] Config error - colors should have 2 more colors than there are score ranges, filling the remaining colors with white");
+                string[] colors = new string[PerfectDisplay.scoreRanges.Length + 2];
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    if (i < PerfectDisplay.colors.Length) colors[i] = PerfectDisplay.colors[i];
+                    else colors[i] = "white";
+                }
+                PerfectDisplay.colors = colors;
+            }
+            for(int i = 0; i < PerfectDisplay.colors.Length; i++)
+            {
+                if (!PerfectDisplay.colors[i].StartsWith("#")) PerfectDisplay.colors[i] = "\""+PerfectDisplay.colors[i]+ "\"";
+            }
             PerfectDisplay.showNumbers = ModPrefs.GetBool("PerfectionDisplay", "Show Count", PerfectDisplay.showNumbers, true);
             PerfectDisplay.showPercent = ModPrefs.GetBool("PerfectionDisplay", "Show Percent", PerfectDisplay.showPercent, true);
         }

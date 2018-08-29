@@ -15,7 +15,7 @@ namespace PerfectionDisplay
         ScoreController scoreController;
         public static Vector3 displayPosition = new Vector3(0, 2.3f, 7f);
         public static int[] scoreRanges = { 100, 90, 50 };
-        public static string[] colors = { "blue", "green", "yellow", "orange", "red" };
+        public static string[] colors = { "#2175ff", "green", "yellow", "orange", "red" };
         int[] scoreCount;
         int misses = 0;
         int notes = 0;
@@ -92,19 +92,19 @@ namespace PerfectionDisplay
             {
                 for (int i = 0; i < scoreRanges.Length; i++)
                 {
-                    text += "<color=\"" + colors[i] + "\">" + ">" + scoreRanges[i] + "-" + scoreCount[i] + "<color=\"black\">|";
+                    text += "<color=" + colors[i] + ">" + ">" + scoreRanges[i] + "-" + scoreCount[i] + "<color=\"black\">|";
                 }
-                text += "<color=\"" + colors[scoreRanges.Length] + "\">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + scoreCount[scoreRanges.Length] + "<color=\"black\">|";
-                text += "<color=\"" + colors[scoreRanges.Length + 1] + "\">" + "MISS-" + misses +"\n";
+                text += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + scoreCount[scoreRanges.Length] + "<color=\"black\">|";
+                text += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS-" + misses +"\n";
             }
             if (showPercent)
             {
                 for (int i = 0; i < scoreRanges.Length; i++)
                 {
-                    text += "<color=\"" + colors[i] + "\">" + ">" + scoreRanges[i] + "-" + GetPercent(scoreCount[i]) + "%<color=\"black\">|";
+                    text += "<color=" + colors[i] + ">" + ">" + scoreRanges[i] + "-" + GetPercent(scoreCount[i]) + "%<color=\"black\">|";
                 }
-                text += "<color=\"" + colors[scoreRanges.Length] + "\">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + GetPercent(scoreCount[scoreRanges.Length]) + "%<color=\"black\">|";
-                text += "<color=\"" + colors[scoreRanges.Length + 1] + "\">" + "MISS-" + GetPercent(misses) + "%";
+                text += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + GetPercent(scoreCount[scoreRanges.Length]) + "%<color=\"black\">|";
+                text += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS-" + GetPercent(misses) + "%";
             }
             scoreMesh.text = text;
         }
