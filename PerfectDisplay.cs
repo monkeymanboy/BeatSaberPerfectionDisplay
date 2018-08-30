@@ -65,8 +65,14 @@ namespace PerfectionDisplay
         public void Cut(NoteData data, NoteCutInfo info, int combo)
         {
             notes++;
+            if (!info.allIsOK)
+            {
+                misses++;
+                UpdateText();
+                return;
+            }
             bool didDone = false;
-            info.afterCutSwingRatingCounter.didFinishEvent += c => {
+            info.afterCutSwingRatingCounter.didFinishEvent += e => {
                 if (didDone) return;
                 didDone = true;
                 ScoreController.ScoreWithoutMultiplier(info, info.afterCutSwingRatingCounter, out int before, out int after);
@@ -106,6 +112,27 @@ namespace PerfectionDisplay
                 text += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + GetPercent(scoreCount[scoreRanges.Length]) + "%<color=\"black\">|";
                 text += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS-" + GetPercent(misses) + "%";
             }
+            Plugin.lastText = "Range\n";
+            for (int i = 0; i < scoreRanges.Length; i++)
+            {
+                Plugin.lastText += "<color=" + colors[i] + ">" + ">" + scoreRanges[i] + "\n";
+            }
+            Plugin.lastText += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "\n";
+            Plugin.lastText += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS";
+            Plugin.lastCount = "Count\n";
+            for (int i = 0; i < scoreRanges.Length; i++)
+            {
+                Plugin.lastCount += "<color=" + colors[i] + ">" + scoreCount[i] + "\n";
+            }
+            Plugin.lastCount += "<color=" + colors[scoreRanges.Length] + ">" + scoreCount[scoreRanges.Length - 1] + "\n";
+            Plugin.lastCount += "<color=" + colors[scoreRanges.Length + 1] + ">" + misses;
+            Plugin.lastPercent = "Percent\n";
+            for (int i = 0; i < scoreRanges.Length; i++)
+            {
+                Plugin.lastPercent += "<color=" + colors[i] + ">" + GetPercent(scoreCount[i]) + "%\n";
+            }
+            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length] + ">" + GetPercent(scoreCount[scoreRanges.Length - 1]) + "%\n";
+            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length + 1] + ">" + GetPercent(misses);
             scoreMesh.text = text;
         }
         private String GetPercent(int hits)

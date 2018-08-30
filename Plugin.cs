@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +11,11 @@ namespace PerfectionDisplay
     public class Plugin : IPlugin
     {
         public string Name => "Perfection Display";
-        public string Version => "1.1";
+        public string Version => "1.2.0";
+
+        public static string lastText = "";
+        public static string lastPercent = "";
+        public static string lastCount = "";
 
         private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
         
@@ -65,22 +70,48 @@ namespace PerfectionDisplay
             PerfectDisplay.showPercent = ModPrefs.GetBool("PerfectionDisplay", "Show Percent", PerfectDisplay.showPercent, true);
         }
 
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
-        {
-        }
-
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
-        {
-        }
-
         public void OnApplicationQuit()
         {
             SceneManager.activeSceneChanged -= OnSceneChanged;
         }
 
+        private void OnSceneChanged(Scene _, Scene scene)
+        {
+            if(scene.name.Equals("Menu"))
+            {
+                foreach (var rootGameObject in scene.GetRootGameObjects())
+                {
+                    if (rootGameObject.name.Equals("ViewControllers"))
+                    {
+                        TextMeshProUGUI text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("Results").Find("Cleared"), false);
+                        text.fontSize = 4;
+                        text.color = Color.white;
+                        text.text = lastText;
+                        text.alignment = TextAlignmentOptions.Left;
+                        text.rectTransform.localPosition = new Vector3(-20, 28, 0);
+                        text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("Results").Find("Cleared"), false);
+                        text.fontSize = 4;
+                        text.color = Color.white;
+                        text.text = lastCount;
+                        text.alignment = TextAlignmentOptions.Left;
+                        text.rectTransform.localPosition = new Vector3(3, 28, 0);
+                        text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("Results").Find("Cleared"), false);
+                        text.fontSize = 4;
+                        text.color = Color.white;
+                        text.text = lastPercent;
+                        text.alignment = TextAlignmentOptions.Left;
+                        text.rectTransform.localPosition = new Vector3(-10, 28, 0);
+                        return;
+                    }
+                }
+            }
+            if (!env.Contains(scene.name)) return;
+
+            new GameObject("PerfectDisplay").AddComponent<PerfectDisplay>();
+        }
+
         public void OnLevelWasLoaded(int level)
         {
-
         }
 
         public void OnLevelWasInitialized(int level)
@@ -93,13 +124,6 @@ namespace PerfectionDisplay
 
         public void OnFixedUpdate()
         {
-        }
-
-        private void OnSceneChanged(Scene _, Scene scene)
-        {
-            if (!env.Contains(scene.name)) return;
-
-            new GameObject("PerfectDisplay").AddComponent<PerfectDisplay>();
         }
     }
 }
