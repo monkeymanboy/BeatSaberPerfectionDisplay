@@ -29,6 +29,7 @@ namespace PerfectionDisplay
         }
         public void UpdateText(int score, string percent)
         {
+            if (!PerfectDisplay.showNumbers && !PerfectDisplay.showPercent) return;
             string text = "<color=" + color + ">" + title+"\n";
             if (PerfectDisplay.showNumbers) text += score + "\n";
             if (PerfectDisplay.showPercent) text += percent + "%\n";

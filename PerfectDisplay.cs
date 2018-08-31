@@ -123,7 +123,7 @@ namespace PerfectionDisplay
             {
                 Plugin.lastText += "<color=" + colors[i] + ">" + (shouldHitscore?hitScoreNames[i]:(">" + scoreRanges[i])) + "\n";
             }
-            Plugin.lastText += "<color=" + colors[scoreRanges.Length] + ">" + (shouldHitscore ? hitScoreNames[scoreRanges.Length - 1] : ("<" + scoreRanges[scoreRanges.Length - 1])) + "\n";
+            Plugin.lastText += "<color=" + colors[scoreRanges.Length] + ">" + (shouldHitscore ? hitScoreNames[scoreRanges.Length] : ("<" + scoreRanges[scoreRanges.Length - 1])) + "\n";
             Plugin.lastText += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS";
             Plugin.lastCount = "Count\n";
             for (int i = 0; i < scoreRanges.Length; i++)
