@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using TMPro;
 using System.Collections;
 
 namespace PerfectionDisplay
 {
     class PerfectDisplay : MonoBehaviour
     {
-        TextMeshPro scoreMesh;
         ScoreController scoreController;
         public static Vector3 displayPosition = new Vector3(0, 2.3f, 7f);
         public static int[] scoreRanges = { 100, 90, 50 };
+        public static string[] hitScoreNames;
+        public static bool shouldHitscore = true;
         public static string[] colors = { "#2175ff", "green", "yellow", "orange", "red" };
         int[] scoreCount;
+        DisplaySection[] sections;
         int misses = 0;
         int notes = 0;
         public static bool showNumbers = true;
@@ -42,13 +40,21 @@ namespace PerfectionDisplay
         }
         private void Init()
         {
-            scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
-            scoreMesh.text = "";
-            scoreMesh.fontSize = 3;
-            scoreMesh.color = Color.white;
-            scoreMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
-            scoreMesh.alignment = TextAlignmentOptions.Center;
-            scoreMesh.rectTransform.position = displayPosition;
+            sections = new DisplaySection[colors.Length];
+            sections[scoreRanges.Length] = new GameObject().AddComponent<DisplaySection>();
+            sections[scoreRanges.Length].color = colors[scoreRanges.Length];
+            sections[scoreRanges.Length].title = "<" + scoreRanges[scoreRanges.Length - 1];
+            if(shouldHitscore) sections[scoreRanges.Length].title = hitScoreNames[hitScoreNames.Length-1];
+            sections[scoreRanges.Length + 1] = new GameObject().AddComponent<DisplaySection>();
+            sections[scoreRanges.Length + 1].color = colors[scoreRanges.Length + 1];
+            sections[scoreRanges.Length + 1].title = "MISS";
+            for (int i = 0; i < scoreRanges.Length; i++)
+            {
+                sections[i] = new GameObject().AddComponent<DisplaySection>();
+                sections[i].color = colors[i];
+                sections[i].title = ">" + scoreRanges[i];
+                if (shouldHitscore) sections[i].title = hitScoreNames[i];
+            }
             if (scoreController != null)
             {
                 scoreController.noteWasMissedEvent += Miss;
@@ -93,47 +99,46 @@ namespace PerfectionDisplay
 
         public void UpdateText()
         {
-            String text = "";
-            if (showNumbers)
+            float width = 0;
+            for(int i = 0; i < scoreCount.Length; i++)
             {
-                for (int i = 0; i < scoreRanges.Length; i++)
-                {
-                    text += "<color=" + colors[i] + ">" + ">" + scoreRanges[i] + "-" + scoreCount[i] + "<color=\"black\">|";
-                }
-                text += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + scoreCount[scoreRanges.Length] + "<color=\"black\">|";
-                text += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS-" + misses +"\n";
+                sections[i].UpdateText(scoreCount[i], GetPercent(scoreCount[i]));
+                width += sections[i].GetWidth();
             }
-            if (showPercent)
+            sections[scoreRanges.Length+1].UpdateText(misses, GetPercent(misses));
+            width += sections[scoreRanges.Length + 1].GetWidth();
+
+            float curX = sections[0].GetWidth() / 2; ;
+            for (int i = 0; i < scoreCount.Length; i++)
             {
-                for (int i = 0; i < scoreRanges.Length; i++)
-                {
-                    text += "<color=" + colors[i] + ">" + ">" + scoreRanges[i] + "-" + GetPercent(scoreCount[i]) + "%<color=\"black\">|";
-                }
-                text += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "-" + GetPercent(scoreCount[scoreRanges.Length]) + "%<color=\"black\">|";
-                text += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS-" + GetPercent(misses) + "%";
+                sections[i].UpdatePosition(-(width/2)+curX);
+                curX += sections[i].GetWidth() / 2;
+                curX += sections[i + 1].GetWidth() / 2;
             }
+            sections[scoreRanges.Length+1].UpdatePosition(-(width / 2) + curX);
+
+
             Plugin.lastText = "Range\n";
             for (int i = 0; i < scoreRanges.Length; i++)
             {
-                Plugin.lastText += "<color=" + colors[i] + ">" + ">" + scoreRanges[i] + "\n";
+                Plugin.lastText += "<color=" + colors[i] + ">" + (shouldHitscore?hitScoreNames[i]:(">" + scoreRanges[i])) + "\n";
             }
-            Plugin.lastText += "<color=" + colors[scoreRanges.Length] + ">" + "<" + scoreRanges[scoreRanges.Length - 1] + "\n";
+            Plugin.lastText += "<color=" + colors[scoreRanges.Length] + ">" + (shouldHitscore ? hitScoreNames[scoreRanges.Length - 1] : ("<" + scoreRanges[scoreRanges.Length - 1])) + "\n";
             Plugin.lastText += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS";
             Plugin.lastCount = "Count\n";
             for (int i = 0; i < scoreRanges.Length; i++)
             {
                 Plugin.lastCount += "<color=" + colors[i] + ">" + scoreCount[i] + "\n";
             }
-            Plugin.lastCount += "<color=" + colors[scoreRanges.Length] + ">" + scoreCount[scoreRanges.Length - 1] + "\n";
+            Plugin.lastCount += "<color=" + colors[scoreRanges.Length] + ">" + scoreCount[scoreRanges.Length] + "\n";
             Plugin.lastCount += "<color=" + colors[scoreRanges.Length + 1] + ">" + misses;
             Plugin.lastPercent = "Percent\n";
             for (int i = 0; i < scoreRanges.Length; i++)
             {
                 Plugin.lastPercent += "<color=" + colors[i] + ">" + GetPercent(scoreCount[i]) + "%\n";
             }
-            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length] + ">" + GetPercent(scoreCount[scoreRanges.Length - 1]) + "%\n";
-            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length + 1] + ">" + GetPercent(misses);
-            scoreMesh.text = text;
+            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length] + ">" + GetPercent(scoreCount[scoreRanges.Length]) + "%\n";
+            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length + 1] + ">" + GetPercent(misses)+"%";
         }
         private String GetPercent(int hits)
         {

@@ -1,7 +1,9 @@
 ﻿using IllusionPlugin;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,13 +13,15 @@ namespace PerfectionDisplay
     public class Plugin : IPlugin
     {
         public string Name => "Perfection Display";
-        public string Version => "1.2.0";
+        public string Version => "1.3.0";
 
         public static string lastText = "";
         public static string lastPercent = "";
         public static string lastCount = "";
 
         private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
+
+        bool init = true;
         
         public void OnApplicationStart()
         {
@@ -68,15 +72,35 @@ namespace PerfectionDisplay
             }
             PerfectDisplay.showNumbers = ModPrefs.GetBool("PerfectionDisplay", "Show Count", PerfectDisplay.showNumbers, true);
             PerfectDisplay.showPercent = ModPrefs.GetBool("PerfectionDisplay", "Show Percent", PerfectDisplay.showPercent, true);
+            PerfectDisplay.shouldHitscore = ModPrefs.GetBool("PerfectionDisplay", "HitScoreVisualizer Integration", PerfectDisplay.shouldHitscore, true);
         }
 
         public void OnApplicationQuit()
         {
             SceneManager.activeSceneChanged -= OnSceneChanged;
         }
-
+        private void LoadHitScore()
+        {
+            HitScoreVisualizer.Config.Judgment[] judgments = HitScoreVisualizer.Config.instance.judgments;
+            PerfectDisplay.scoreRanges = new int[judgments.Length - 1];
+            PerfectDisplay.hitScoreNames = new string[judgments.Length];
+            PerfectDisplay.colors = new string[judgments.Length + 1];
+            for (int i = 0; i < judgments.Length; i++)
+            {
+                if (i != PerfectDisplay.scoreRanges.Length) PerfectDisplay.scoreRanges[i] = judgments[i].threshold - 1;
+                PerfectDisplay.hitScoreNames[i] = judgments[i].text.Replace("%n", "").Replace("%s", "").Replace("%B", "").Replace("%C", "").Replace("%A", "").Trim();
+                PerfectDisplay.colors[i] = "#" + ((int)(judgments[i].color[0] * 255)).ToString("X2") + ((int)(judgments[i].color[1] * 255)).ToString("X2") + ((int)(judgments[i].color[2] * 255)).ToString("X2") + ((int)(judgments[i].color[3] * 255)).ToString("X2");
+            }
+            PerfectDisplay.colors[PerfectDisplay.colors.Length - 1] = "#FF0000";
+        }
         private void OnSceneChanged(Scene _, Scene scene)
         {
+            if (init)
+            {
+                init = false;
+                if (PerfectDisplay.shouldHitscore && HasType("HitScoreVisualizer")) LoadHitScore();
+                else PerfectDisplay.shouldHitscore = false;
+            }
             if(scene.name.Equals("Menu"))
             {
                 foreach (var rootGameObject in scene.GetRootGameObjects())
@@ -86,21 +110,24 @@ namespace PerfectionDisplay
                         TextMeshProUGUI text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("Results").Find("Cleared"), false);
                         text.fontSize = 4;
                         text.color = Color.white;
+                        text.paragraphSpacing = -15f;
                         text.text = lastText;
-                        text.alignment = TextAlignmentOptions.Left;
-                        text.rectTransform.localPosition = new Vector3(-20, 28, 0);
+                        text.alignment = TextAlignmentOptions.TopLeft;
+                        text.rectTransform.localPosition = new Vector3(-25, 40, 0);
                         text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("Results").Find("Cleared"), false);
                         text.fontSize = 4;
                         text.color = Color.white;
+                        text.paragraphSpacing = -15f;
                         text.text = lastCount;
-                        text.alignment = TextAlignmentOptions.Left;
-                        text.rectTransform.localPosition = new Vector3(3, 28, 0);
+                        text.alignment = TextAlignmentOptions.TopLeft;
+                        text.rectTransform.localPosition = new Vector3(0-5, 40, 0);
                         text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("Results").Find("Cleared"), false);
                         text.fontSize = 4;
                         text.color = Color.white;
+                        text.paragraphSpacing = -15f;
                         text.text = lastPercent;
-                        text.alignment = TextAlignmentOptions.Left;
-                        text.rectTransform.localPosition = new Vector3(-10, 28, 0);
+                        text.alignment = TextAlignmentOptions.TopLeft;
+                        text.rectTransform.localPosition = new Vector3(10-5, 40, 0);
                         return;
                     }
                 }
@@ -108,6 +135,20 @@ namespace PerfectionDisplay
             if (!env.Contains(scene.name)) return;
 
             new GameObject("PerfectDisplay").AddComponent<PerfectDisplay>();
+        }
+
+        private bool HasType(string typeName)
+        {
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.Namespace == typeName)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         public void OnLevelWasLoaded(int level)
