@@ -64,6 +64,7 @@ namespace PerfectionDisplay
         }
         public void Miss(NoteData data, int c)
         {
+            if (data.noteType == NoteType.Bomb) return;
             misses++;
             notes++;
             UpdateText();
