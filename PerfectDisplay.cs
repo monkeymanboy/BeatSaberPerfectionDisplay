@@ -17,8 +17,8 @@ namespace PerfectionDisplay
         DisplaySection[] sections;
         int misses = 0;
         int notes = 0;
-        public static bool showNumbers = true;
-        public static bool showPercent = true;
+        public static bool showNumbers = false;
+        public static bool showPercent = false;
         IEnumerator WaitForLoad()
         {
             bool loaded = false;
@@ -35,7 +35,7 @@ namespace PerfectionDisplay
         }
         void Awake()
         {
-            scoreCount = new int[scoreRanges.Length+1];
+            scoreCount = new int[scoreRanges.Length + 1];
             StartCoroutine(WaitForLoad());
         }
         private void Init()
@@ -44,13 +44,13 @@ namespace PerfectionDisplay
             sections[scoreRanges.Length] = new GameObject().AddComponent<DisplaySection>();
             sections[scoreRanges.Length].color = colors[scoreRanges.Length];
             sections[scoreRanges.Length].title = "<" + scoreRanges[scoreRanges.Length - 1];
-            if(shouldHitscore) sections[scoreRanges.Length].title = hitScoreNames[hitScoreNames.Length-1];
+            if (shouldHitscore) sections[scoreRanges.Length].title = hitScoreNames[hitScoreNames.Length - 1];
             sections[scoreRanges.Length + 1] = new GameObject().AddComponent<DisplaySection>();
             sections[scoreRanges.Length + 1].color = colors[scoreRanges.Length + 1];
             sections[scoreRanges.Length + 1].title = "MISS";
             for (int i = 0; i < scoreRanges.Length; i++)
             {
-                sections[i] = new GameObject().AddComponent<DisplaySection>();
+                sections[i] = new GameObject("PerfectionDisplaySection").AddComponent<DisplaySection>();
                 sections[i].color = colors[i];
                 sections[i].title = ">" + scoreRanges[i];
                 if (shouldHitscore) sections[i].title = hitScoreNames[i];
@@ -79,14 +79,15 @@ namespace PerfectionDisplay
                 return;
             }
             bool didDone = false;
-            info.afterCutSwingRatingCounter.didFinishEvent += e => {
+            info.afterCutSwingRatingCounter.didFinishEvent += e =>
+            {
                 if (didDone) return;
                 didDone = true;
                 ScoreController.ScoreWithoutMultiplier(info, info.afterCutSwingRatingCounter, out int before, out int after);
                 int total = before + after;
                 for (int i = 0; i < scoreRanges.Length; i++)
                 {
-                    if (scoreRanges[i] <total)
+                    if (scoreRanges[i] < total)
                     {
                         scoreCount[i]++;
                         UpdateText();
@@ -100,29 +101,32 @@ namespace PerfectionDisplay
 
         public void UpdateText()
         {
-            float width = 0;
-            for(int i = 0; i < scoreCount.Length; i++)
+            if (PerfectDisplay.showNumbers || PerfectDisplay.showPercent)
             {
-                sections[i].UpdateText(scoreCount[i], GetPercent(scoreCount[i]));
-                width += sections[i].GetWidth();
-            }
-            sections[scoreRanges.Length+1].UpdateText(misses, GetPercent(misses));
-            width += sections[scoreRanges.Length + 1].GetWidth();
+                float width = 0;
+                for (int i = 0; i < scoreCount.Length; i++)
+                {
+                    sections[i].UpdateText(scoreCount[i], GetPercent(scoreCount[i]));
+                    width += sections[i].GetWidth();
+                }
+                sections[scoreRanges.Length + 1].UpdateText(misses, GetPercent(misses));
+                width += sections[scoreRanges.Length + 1].GetWidth();
 
-            float curX = sections[0].GetWidth() / 2; ;
-            for (int i = 0; i < scoreCount.Length; i++)
-            {
-                sections[i].UpdatePosition(-(width/2)+curX);
-                curX += sections[i].GetWidth() / 2;
-                curX += sections[i + 1].GetWidth() / 2;
+                float curX = sections[0].GetWidth() / 2; ;
+                for (int i = 0; i < scoreCount.Length; i++)
+                {
+                    sections[i].UpdatePosition(-(width / 2) + curX);
+                    curX += sections[i].GetWidth() / 2;
+                    curX += sections[i + 1].GetWidth() / 2;
+                }
+                sections[scoreRanges.Length + 1].UpdatePosition(-(width / 2) + curX);
             }
-            sections[scoreRanges.Length+1].UpdatePosition(-(width / 2) + curX);
 
 
             Plugin.lastText = "Range\n";
             for (int i = 0; i < scoreRanges.Length; i++)
             {
-                Plugin.lastText += "<color=" + colors[i] + ">" + (shouldHitscore?hitScoreNames[i]:(">" + scoreRanges[i])) + "\n";
+                Plugin.lastText += "<color=" + colors[i] + ">" + (shouldHitscore ? hitScoreNames[i] : (">" + scoreRanges[i])) + "\n";
             }
             Plugin.lastText += "<color=" + colors[scoreRanges.Length] + ">" + (shouldHitscore ? hitScoreNames[scoreRanges.Length] : ("<" + scoreRanges[scoreRanges.Length - 1])) + "\n";
             Plugin.lastText += "<color=" + colors[scoreRanges.Length + 1] + ">" + "MISS";
@@ -139,7 +143,7 @@ namespace PerfectionDisplay
                 Plugin.lastPercent += "<color=" + colors[i] + ">" + GetPercent(scoreCount[i]) + "%\n";
             }
             Plugin.lastPercent += "<color=" + colors[scoreRanges.Length] + ">" + GetPercent(scoreCount[scoreRanges.Length]) + "%\n";
-            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length + 1] + ">" + GetPercent(misses)+"%";
+            Plugin.lastPercent += "<color=" + colors[scoreRanges.Length + 1] + ">" + GetPercent(misses) + "%";
         }
         private String GetPercent(int hits)
         {
