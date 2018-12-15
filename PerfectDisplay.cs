@@ -83,7 +83,7 @@ namespace PerfectionDisplay
             {
                 if (didDone) return;
                 didDone = true;
-                ScoreController.ScoreWithoutMultiplier(info, info.afterCutSwingRatingCounter, out int before, out int after);
+                ScoreController.ScoreWithoutMultiplier(info, info.afterCutSwingRatingCounter, out int before, out int after, out int distScore);
                 int total = before + after;
                 for (int i = 0; i < scoreRanges.Length; i++)
                 {
