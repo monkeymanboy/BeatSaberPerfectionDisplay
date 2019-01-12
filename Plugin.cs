@@ -1,12 +1,12 @@
 ﻿using IllusionPlugin;
+using IllusionInjector;
 using System;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using HitScoreVisualizer;
 
 namespace PerfectionDisplay
 {
@@ -84,7 +84,7 @@ namespace PerfectionDisplay
         }
         private void LoadHitScore()
         {
-            HitScoreVisualizer.Config.Judgment[] judgments = HitScoreVisualizer.Config.instance.judgments;
+            Config.Judgment[] judgments = Config.instance.judgments;
             PerfectDisplay.scoreRanges = new int[judgments.Length - 1];
             PerfectDisplay.hitScoreNames = new string[judgments.Length];
             PerfectDisplay.colors = new string[judgments.Length + 1];
@@ -109,7 +109,8 @@ namespace PerfectionDisplay
             if (init)
             {
                 init = false;
-                if (PerfectDisplay.shouldHitscore && HasType("HitScoreVisualizer")) LoadHitScore();
+                Console.WriteLine(PluginManager.Plugins);
+                if (PerfectDisplay.shouldHitscore && PluginManager.Plugins.Any(x => x.Name == "HitScoreVisualizer")) LoadHitScore();
                 else PerfectDisplay.shouldHitscore = false;
             }
             if(scene.name.Equals("Menu"))
@@ -156,20 +157,6 @@ namespace PerfectionDisplay
             if (text != null) text.text = lastText;
             if (percent!= null) percent.text = lastPercent;
             if (count != null) count.text = lastCount;
-        }
-
-        private bool HasType(string typeName)
-        {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (Type type in assembly.GetTypes())
-                {
-                    if (type.Namespace == typeName)
-                        return true;
-                }
-            }
-
-            return false;
         }
 
         public void OnLevelWasLoaded(int level)
