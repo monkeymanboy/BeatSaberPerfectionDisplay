@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using HitScoreVisualizer;
+using System.Text.RegularExpressions;
 
 namespace PerfectionDisplay
 {
@@ -91,7 +92,7 @@ namespace PerfectionDisplay
             for (int i = 0; i < judgments.Length; i++)
             {
                 if (i != PerfectDisplay.scoreRanges.Length) PerfectDisplay.scoreRanges[i] = judgments[i].threshold - 1;
-                PerfectDisplay.hitScoreNames[i] = judgments[i].text.Replace("%n", "").Replace("%s", "").Replace("%B", "").Replace("%C", "").Replace("%A", "").Replace("%b", "").Replace("%c", "").Replace("%a", "").Trim();
+                PerfectDisplay.hitScoreNames[i] = Regex.Replace(judgments[i].text, "(%)\\w{1}", "").Trim();
                 PerfectDisplay.colors[i] = "#" + ((int)(judgments[i].color[0] * 255)).ToString("X2") + ((int)(judgments[i].color[1] * 255)).ToString("X2") + ((int)(judgments[i].color[2] * 255)).ToString("X2") + ((int)(judgments[i].color[3] * 255)).ToString("X2");
             }
             PerfectDisplay.colors[PerfectDisplay.colors.Length - 1] = "#afa5a3";
