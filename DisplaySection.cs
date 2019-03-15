@@ -16,15 +16,18 @@ namespace PerfectionDisplay
 
         void Awake()
         {
-            scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
+            scoreMesh = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshPro>().First());
+            scoreMesh.transform.SetParent(transform);
             scoreMesh.text = "";
-            scoreMesh.fontSize = 3;
+            scoreMesh.fontSize = 4;
             scoreMesh.lineSpacing = -25f;
             scoreMesh.lineSpacingAdjustment = -25f;
-            scoreMesh.enableAutoSizing = false;
             scoreMesh.paragraphSpacing = -25f;
             scoreMesh.color = Color.white;
-            scoreMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
+            scoreMesh.font = Plugin.mainFont;
+            scoreMesh.overflowMode = TextOverflowModes.Overflow;
+            scoreMesh.enableWordWrapping = false;
+            scoreMesh.richText = true;
             scoreMesh.alignment = TextAlignmentOptions.Center;
         }
         public void UpdateText(int score, string percent)
@@ -33,6 +36,7 @@ namespace PerfectionDisplay
             string text = "<color=" + color + ">" + title+"\n";
             if (PerfectDisplay.showNumbers) text += score + "\n";
             if (PerfectDisplay.showPercent) text += percent + "%";
+            Console.WriteLine(text);
             scoreMesh.text = text;
             scoreMesh.ForceMeshUpdate();
         }

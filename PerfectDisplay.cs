@@ -31,6 +31,7 @@ namespace PerfectionDisplay
                     loaded = true;
             }
 
+            yield return new WaitForSeconds(0.1f);
             Init();
         }
         void Awake()

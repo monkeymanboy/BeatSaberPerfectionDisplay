@@ -13,7 +13,7 @@ namespace PerfectionDisplay
     public class Plugin : IPlugin
     {
         public string Name => "Perfection Display";
-        public string Version => "1.4.2";
+        public string Version => "1.5.0";
 
         public static string lastText = "";
         public static string lastPercent = "";
@@ -22,6 +22,7 @@ namespace PerfectionDisplay
         TextMeshProUGUI text;
         TextMeshProUGUI percent;
         TextMeshProUGUI count;
+        public static TMP_FontAsset mainFont;
 
         bool init = true;
         GameScenesManager gameScenesManager = null;
@@ -113,38 +114,39 @@ namespace PerfectionDisplay
                 if (PerfectDisplay.shouldHitscore && PluginManager.Plugins.Any(x => x.Name == "HitScoreVisualizer")) LoadHitScore();
                 else PerfectDisplay.shouldHitscore = false;
             }
-            if(scene.name.Equals("Menu"))
+            if(scene.name.Equals("MenuCore"))
             {
-                foreach (var rootGameObject in scene.GetRootGameObjects())
-                {
-                    if (rootGameObject.name.Equals("ViewControllers"))
-                    {
-                        int extraOffset = 25;
-                        Console.WriteLine(rootGameObject.transform.childCount);
-                        text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("LevelSelection").Find("StandardLevelResultsViewController"), false);
-                        text.fontSize = 5;
-                        text.color = Color.white;
-                        text.paragraphSpacing = -15f;
-                        text.text = lastText;
-                        text.alignment = TextAlignmentOptions.TopLeft;
-                        text.rectTransform.localPosition = new Vector3(-20+extraOffset, 40, 0);
-                        percent = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("LevelSelection").Find("StandardLevelResultsViewController"), false);
-                        percent.fontSize = 5;
-                        percent.color = Color.white;
-                        percent.paragraphSpacing = -15f;
-                        percent.text = lastCount;
-                        percent.alignment = TextAlignmentOptions.TopLeft;
-                        percent.rectTransform.localPosition = new Vector3(0 + extraOffset, 40, 0);
-                        count = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), rootGameObject.transform.Find("LevelSelection").Find("StandardLevelResultsViewController"), false);
-                        count.fontSize = 5;
-                        count.color = Color.white;
-                        count.paragraphSpacing = -15f;
-                        count.text = lastPercent;
-                        count.alignment = TextAlignmentOptions.TopLeft;
-                        count.rectTransform.localPosition = new Vector3(15 + extraOffset, 40, 0);
-                        return;
-                    }
-                }
+                mainFont = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(t => t.font?.name == "Teko-Medium SDF No Glow").font;
+                if (text != null) MonoBehaviour.Destroy(text);
+                if (percent != null) MonoBehaviour.Destroy(percent);
+                if (count != null) MonoBehaviour.Destroy(count);
+                ResultsViewController results = Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
+                int extraOffset = -12;
+                text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+                text.fontSize = 5;
+                text.color = Color.white;
+                text.lineSpacing = -15f;
+                text.paragraphSpacing = -15f;
+                text.text = lastText;
+                text.alignment = TextAlignmentOptions.TopLeft;
+                text.rectTransform.localPosition = new Vector3(-20+extraOffset, 35, 0);
+                percent = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+                percent.fontSize = 5;
+                percent.color = Color.white;
+                percent.paragraphSpacing = -15f;
+                percent.lineSpacing = -15f;
+                percent.text = lastCount;
+                percent.alignment = TextAlignmentOptions.TopLeft;
+                percent.rectTransform.localPosition = new Vector3(0 + extraOffset, 35, 0);
+                count = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+                count.fontSize = 5;
+                count.color = Color.white;
+                count.lineSpacing = -15f;
+                count.paragraphSpacing = -15f;
+                count.text = lastPercent;
+                count.alignment = TextAlignmentOptions.TopLeft;
+                count.rectTransform.localPosition = new Vector3(15 + extraOffset, 35, 0);
+                return;
             }
             if (scene.name.Equals("GameCore")) new GameObject("PerfectDisplay").AddComponent<PerfectDisplay>();
         }
