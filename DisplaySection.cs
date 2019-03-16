@@ -36,7 +36,6 @@ namespace PerfectionDisplay
             string text = "<color=" + color + ">" + title+"\n";
             if (PerfectDisplay.showNumbers) text += score + "\n";
             if (PerfectDisplay.showPercent) text += percent + "%";
-            Console.WriteLine(text);
             scoreMesh.text = text;
             scoreMesh.ForceMeshUpdate();
         }

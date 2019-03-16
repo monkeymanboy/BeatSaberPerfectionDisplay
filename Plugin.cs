@@ -13,7 +13,7 @@ namespace PerfectionDisplay
     public class Plugin : IPlugin
     {
         public string Name => "Perfection Display";
-        public string Version => "1.5.0";
+        public string Version => "1.5.1";
 
         public static string lastText = "";
         public static string lastPercent = "";
@@ -152,7 +152,6 @@ namespace PerfectionDisplay
         }
         private void OnSceneLoad(Scene _, LoadSceneMode mode)
         {
-            Console.WriteLine(_.name);
         }
         public void OnTransition()
         {
