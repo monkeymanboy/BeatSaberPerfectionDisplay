@@ -1,6 +1,4 @@
-﻿using IllusionPlugin;
-using IllusionInjector;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using TMPro;
@@ -8,14 +6,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HitScoreVisualizer;
 using System.Text.RegularExpressions;
+using IPA;
+using IPA.Config;
+using CustomUI.Utilities;
+using System.Collections;
 
 namespace PerfectionDisplay
 {
-    public class Plugin : IPlugin
+    public class Plugin : IBeatSaberPlugin
     {
-        public string Name => "Perfection Display";
-        public string Version => "1.5.1";
-
         public static string lastText = "";
         public static string lastPercent = "";
         public static string lastCount = "";
@@ -30,8 +29,6 @@ namespace PerfectionDisplay
         
         public void OnApplicationStart()
         {
-            SceneManager.activeSceneChanged += OnSceneChanged;
-
             if (ModPrefs.GetString("PerfectionDisplay", "Position") == "")
             {
                 ModPrefs.SetString("PerfectionDisplay", "Position",FormattableString.Invariant($"{PerfectDisplay.displayPosition.x:0.00},{PerfectDisplay.displayPosition.y:0.00},{PerfectDisplay.displayPosition.z:0.00}"));
@@ -78,15 +75,20 @@ namespace PerfectionDisplay
             PerfectDisplay.showNumbers = ModPrefs.GetBool("PerfectionDisplay", "Show Count", PerfectDisplay.showNumbers, true);
             PerfectDisplay.showPercent = ModPrefs.GetBool("PerfectionDisplay", "Show Percent", PerfectDisplay.showPercent, true);
             PerfectDisplay.shouldHitscore = ModPrefs.GetBool("PerfectionDisplay", "HitScoreVisualizer Integration", PerfectDisplay.shouldHitscore, true);
+
+            BSEvents.menuSceneLoadedFresh += MenuSceneActive;
+            BSEvents.menuSceneActive += MenuSceneActive;
+            BSEvents.gameSceneActive += GameSceneActive;
         }
 
         public void OnApplicationQuit()
         {
-            SceneManager.activeSceneChanged -= OnSceneChanged;
+            BSEvents.menuSceneActive -= MenuSceneActive;
+            BSEvents.gameSceneActive -= GameSceneActive;
         }
         private void LoadHitScore()
         {
-            Config.Judgment[] judgments = Config.instance.judgments;
+            HitScoreVisualizer.Config.Judgment[] judgments = HitScoreVisualizer.Config.instance.judgments;
             PerfectDisplay.scoreRanges = new int[judgments.Length - 1];
             PerfectDisplay.hitScoreNames = new string[judgments.Length];
             PerfectDisplay.colors = new string[judgments.Length + 1];
@@ -100,6 +102,38 @@ namespace PerfectionDisplay
         }
         private void OnSceneChanged(Scene _, Scene scene)
         {
+        }
+        private void OnSceneLoad(Scene _, LoadSceneMode mode)
+        {
+        }
+        public void OnTransition()
+        {
+            if (text != null) text.text = lastText;
+            if (percent!= null) percent.text = lastPercent;
+            if (count != null) count.text = lastCount;
+        }
+        
+
+        public void OnUpdate()
+        {
+        }
+
+        public void OnFixedUpdate()
+        {
+        }
+
+        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
+        {
+
+        }
+
+        public void OnSceneUnloaded(Scene scene)
+        {
+
+        }
+
+        public void OnActiveSceneChanged(Scene _, Scene scene)
+        {
             if (gameScenesManager == null)
             {
                 gameScenesManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
@@ -111,72 +145,62 @@ namespace PerfectionDisplay
             if (init)
             {
                 init = false;
-                Console.WriteLine(PluginManager.Plugins);
-                if (PerfectDisplay.shouldHitscore && PluginManager.Plugins.Any(x => x.Name == "HitScoreVisualizer")) LoadHitScore();
+                if (PerfectDisplay.shouldHitscore && IPA.Loader.PluginManager.Plugins.Any(x => x.Name == "HitScoreVisualizer")) LoadHitScore();
                 else PerfectDisplay.shouldHitscore = false;
             }
-            if(scene.name.Equals("MenuCore"))
+        }
+
+        public void GameSceneActive()
+        {
+            new GameObject("PerfectDisplay").AddComponent<PerfectDisplay>();
+        }
+        public void MenuSceneActive()
+        {
+            if (mainFont == null) gameScenesManager.StartCoroutine(FontHunter());
+            if (text != null) MonoBehaviour.Destroy(text);
+            if (percent != null) MonoBehaviour.Destroy(percent);
+            if (count != null) MonoBehaviour.Destroy(count);
+            ResultsViewController results = Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
+            int extraOffset = -12;
+            text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+            text.fontSize = 5;
+            text.color = Color.white;
+            text.lineSpacing = -15f;
+            text.paragraphSpacing = -15f;
+            text.text = lastText;
+            text.alignment = TextAlignmentOptions.TopLeft;
+            text.rectTransform.localPosition = new Vector3(-20 + extraOffset, 35, 0);
+            percent = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+            percent.fontSize = 5;
+            percent.color = Color.white;
+            percent.paragraphSpacing = -15f;
+            percent.lineSpacing = -15f;
+            percent.text = lastCount;
+            percent.alignment = TextAlignmentOptions.TopLeft;
+            percent.rectTransform.localPosition = new Vector3(0 + extraOffset, 35, 0);
+            count = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+            count.fontSize = 5;
+            count.color = Color.white;
+            count.lineSpacing = -15f;
+            count.paragraphSpacing = -15f;
+            count.text = lastPercent;
+            count.alignment = TextAlignmentOptions.TopLeft;
+            count.rectTransform.localPosition = new Vector3(15 + extraOffset, 35, 0);
+        }
+        //For some reason can't find the font right when scene loads so this will hunt it down
+        public IEnumerator FontHunter()
+        {
+            while (mainFont == null)
             {
-                mainFont = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(t => t.font?.name == "Teko-Medium SDF No Glow").font;
-                if (text != null) MonoBehaviour.Destroy(text);
-                if (percent != null) MonoBehaviour.Destroy(percent);
-                if (count != null) MonoBehaviour.Destroy(count);
-                ResultsViewController results = Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
-                int extraOffset = -12;
-                text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
-                text.fontSize = 5;
-                text.color = Color.white;
-                text.lineSpacing = -15f;
-                text.paragraphSpacing = -15f;
-                text.text = lastText;
-                text.alignment = TextAlignmentOptions.TopLeft;
-                text.rectTransform.localPosition = new Vector3(-20+extraOffset, 35, 0);
-                percent = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
-                percent.fontSize = 5;
-                percent.color = Color.white;
-                percent.paragraphSpacing = -15f;
-                percent.lineSpacing = -15f;
-                percent.text = lastCount;
-                percent.alignment = TextAlignmentOptions.TopLeft;
-                percent.rectTransform.localPosition = new Vector3(0 + extraOffset, 35, 0);
-                count = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
-                count.fontSize = 5;
-                count.color = Color.white;
-                count.lineSpacing = -15f;
-                count.paragraphSpacing = -15f;
-                count.text = lastPercent;
-                count.alignment = TextAlignmentOptions.TopLeft;
-                count.rectTransform.localPosition = new Vector3(15 + extraOffset, 35, 0);
-                return;
+                try
+                {
+                    mainFont = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(t => t.font?.name == "Teko-Medium SDF No Glow").font;
+                } catch
+                {
+
+                }
+                yield return new WaitForSeconds(1f);
             }
-            if (scene.name.Equals("GameCore")) new GameObject("PerfectDisplay").AddComponent<PerfectDisplay>();
-        }
-        private void OnSceneLoad(Scene _, LoadSceneMode mode)
-        {
-        }
-        public void OnTransition()
-        {
-            if (text != null) text.text = lastText;
-            if (percent!= null) percent.text = lastPercent;
-            if (count != null) count.text = lastCount;
-        }
-
-        public void OnLevelWasLoaded(int level)
-        {
-
-        }
-
-        public void OnLevelWasInitialized(int level)
-        {
-
-        }
-
-        public void OnUpdate()
-        {
-        }
-
-        public void OnFixedUpdate()
-        {
         }
     }
 }

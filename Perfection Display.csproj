@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PerfectionDisplay</RootNamespace>
     <AssemblyName>Perfect Display</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -33,19 +33,19 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>E:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BeatSaberCustomUI">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\BeatSaberCustomUI.dll</HintPath>
     </Reference>
     <Reference Include="HitScoreVisualizer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\HitScoreVisualizer.dll</HintPath>
     </Reference>
-    <Reference Include="IllusionInjector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IllusionInjector.dll</HintPath>
-    </Reference>
-    <Reference Include="IllusionPlugin">
-      <HintPath>E:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IllusionPlugin.dll</HintPath>
+    <Reference Include="IPA.Loader">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,6 +84,9 @@
     <Compile Include="PerfectDisplay.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="manifest.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

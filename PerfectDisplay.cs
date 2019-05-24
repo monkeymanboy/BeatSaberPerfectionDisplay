@@ -2,12 +2,14 @@
 using System.Linq;
 using UnityEngine;
 using System.Collections;
+using CustomUI.Utilities;
 
 namespace PerfectionDisplay
 {
     class PerfectDisplay : MonoBehaviour
     {
         ScoreController scoreController;
+        StandardLevelGameplayManager gameplayManager;
         public static Vector3 displayPosition = new Vector3(0, 2.3f, 7f);
         public static int[] scoreRanges = { 100, 90, 50 };
         public static string[] hitScoreNames;
@@ -25,7 +27,8 @@ namespace PerfectionDisplay
             while (!loaded)
             {
                 scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
-                if (scoreController == null)
+                gameplayManager = Resources.FindObjectsOfTypeAll<StandardLevelGameplayManager>().FirstOrDefault();
+                if (scoreController == null || gameplayManager == null)
                     yield return new WaitForSeconds(0.1f);
                 else
                     loaded = true;
@@ -61,6 +64,11 @@ namespace PerfectionDisplay
                 scoreController.noteWasMissedEvent += Miss;
                 scoreController.noteWasCutEvent += Cut;
             }
+            if(gameplayManager != null)
+            {
+                gameplayManager.GetPrivateField<Signal>("_levelFinishedSignal").Subscribe(SongFinish);
+                gameplayManager.GetPrivateField<Signal>("_levelFailedSignal").Subscribe(SongFinish);
+            }
             UpdateText();
         }
         public void Miss(NoteData data, int c)
@@ -84,7 +92,7 @@ namespace PerfectionDisplay
             {
                 if (didDone) return;
                 didDone = true;
-                ScoreController.ScoreWithoutMultiplier(info, info.afterCutSwingRatingCounter, out int before, out int after, out int distScore);
+                ScoreController.RawScoreWithoutMultiplier(info, info.afterCutSwingRatingCounter, out int before, out int after, out int distScore);
                 int total = before + after;
                 for (int i = 0; i < scoreRanges.Length; i++)
                 {
@@ -122,8 +130,9 @@ namespace PerfectionDisplay
                 }
                 sections[scoreRanges.Length + 1].UpdatePosition(-(width / 2) + curX);
             }
-
-
+        }
+        public void SongFinish()
+        {
             Plugin.lastText = "Range\n";
             for (int i = 0; i < scoreRanges.Length; i++)
             {
