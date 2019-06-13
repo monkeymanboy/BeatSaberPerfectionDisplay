@@ -2,13 +2,13 @@
   "$schema": "https://raw.githubusercontent.com/nike4613/ModSaber-MetadataFileSchema/master/Schema.json",
   "author": "monkeymanboy",
   "description": "Adds more info to the results screen and during gameplay if enabled. Will use HitScoreVisualizer config if you have the plugin and integration is enabled.",
-  "gameVersion": "1.0.0",
+  "gameVersion": "1.1.0",
   "id": "PerfectionDisplay",
   "name": "Perfection Display",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "dependsOn": {
-    "BSIPA": "^3.12.19",
-    "CustomUI": "^1.5.4"
+    "BSIPA": "^3.12.21",
+    "CustomUI": "^1.5.10"
   },
   "features": [
   ]
