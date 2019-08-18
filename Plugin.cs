@@ -194,7 +194,8 @@ namespace PerfectionDisplay
             {
                 try
                 {
-                    mainFont = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(t => t.font?.name == "Teko-Medium SDF No Glow").font;
+                    TextMeshProUGUI textMesh = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(t => t.font?.name == "Teko-Medium SDF No Glow");
+                    if(textMesh!=null) mainFont = textMesh.font;
                 } catch
                 {
 

@@ -9,7 +9,7 @@ namespace PerfectionDisplay
     class PerfectDisplay : MonoBehaviour
     {
         ScoreController scoreController;
-        StandardLevelGameplayManager gameplayManager;
+        MonoBehaviour gameplayManager;
         public static Vector3 displayPosition = new Vector3(0, 2.3f, 7f);
         public static int[] scoreRanges = { 100, 90, 50 };
         public static string[] hitScoreNames;
@@ -27,7 +27,7 @@ namespace PerfectionDisplay
             while (!loaded)
             {
                 scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
-                gameplayManager = Resources.FindObjectsOfTypeAll<StandardLevelGameplayManager>().FirstOrDefault();
+                gameplayManager = Resources.FindObjectsOfTypeAll<StandardLevelGameplayManager>().FirstOrDefault() as MonoBehaviour ?? Resources.FindObjectsOfTypeAll<MissionLevelGameplayManager>().FirstOrDefault() as MonoBehaviour;
                 if (scoreController == null || gameplayManager == null)
                     yield return new WaitForSeconds(0.1f);
                 else
