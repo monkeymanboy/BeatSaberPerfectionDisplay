@@ -1,0 +1,5 @@
+<settings-container>
+  <bool-setting text='Show Count' value='showCount'></bool-setting>
+  <bool-setting text='Show Percentage' value='showPercentage'></bool-setting>
+  <bool-setting text='HitscoreVisualizer Integration' value='hitscoreIntegration'></bool-setting>
+</settings-container>

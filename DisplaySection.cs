@@ -10,6 +10,7 @@ namespace PerfectionDisplay
 {
     class DisplaySection : MonoBehaviour
     {
+        public PerfectDisplay perfectDisplay;
         TextMeshPro scoreMesh;
         public string title;
         public string color;
@@ -32,16 +33,16 @@ namespace PerfectionDisplay
         }
         public void UpdateText(int score, string percent)
         {
-            if (!PerfectDisplay.showNumbers && !PerfectDisplay.showPercent) return;
+            if (!perfectDisplay.showNumbers && !perfectDisplay.showPercent) return;
             string text = "<color=" + color + ">" + title+"\n";
-            if (PerfectDisplay.showNumbers) text += score + "\n";
-            if (PerfectDisplay.showPercent) text += percent + "%";
+            if (perfectDisplay.showNumbers) text += score + "\n";
+            if (perfectDisplay.showPercent) text += percent + "%";
             scoreMesh.text = text;
             scoreMesh.ForceMeshUpdate();
         }
         public void UpdatePosition(float x)
         {
-            transform.localPosition = PerfectDisplay.displayPosition+new Vector3(x,0,0);
+            transform.localPosition = perfectDisplay.displayPosition+new Vector3(x,0,0);
         }
 
         public float GetWidth()
