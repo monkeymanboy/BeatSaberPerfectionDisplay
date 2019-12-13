@@ -10,6 +10,8 @@ namespace PerfectionDisplay
     class PerfectDisplay : MonoBehaviour
     {
         ScoreController scoreController;
+        StandardLevelGameplayManager standardLevelGameplayManager;
+        MissionLevelGameplayManager missionLevelGameplayManager;
         MonoBehaviour gameplayManager;
         public Vector3 displayPosition;
         public int[] scoreRanges;
@@ -28,8 +30,9 @@ namespace PerfectionDisplay
             while (!loaded)
             {
                 scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
-                gameplayManager = Resources.FindObjectsOfTypeAll<StandardLevelGameplayManager>().FirstOrDefault() as MonoBehaviour ?? Resources.FindObjectsOfTypeAll<MissionLevelGameplayManager>().FirstOrDefault() as MonoBehaviour;
-                if (scoreController == null || gameplayManager == null)
+                standardLevelGameplayManager = Resources.FindObjectsOfTypeAll<StandardLevelGameplayManager>().FirstOrDefault();
+                missionLevelGameplayManager = Resources.FindObjectsOfTypeAll<MissionLevelGameplayManager>().FirstOrDefault();
+                if (scoreController == null || (standardLevelGameplayManager == null && missionLevelGameplayManager == null))
                     yield return new WaitForSeconds(0.1f);
                 else
                     loaded = true;
@@ -90,10 +93,15 @@ namespace PerfectionDisplay
                 scoreController.noteWasMissedEvent += Miss;
                 scoreController.noteWasCutEvent += Cut;
             }
-            if(gameplayManager != null)
+            if (standardLevelGameplayManager != null)
             {
-                gameplayManager.GetPrivateField<Signal>("_levelFinishedSignal").Subscribe(SongFinish);
-                gameplayManager.GetPrivateField<Signal>("_levelFailedSignal").Subscribe(SongFinish);
+                standardLevelGameplayManager.levelFailedEvent += SongFinish;
+                standardLevelGameplayManager.levelFinishedEvent += SongFinish;
+            }
+            if (missionLevelGameplayManager != null)
+            {
+                missionLevelGameplayManager.levelFailedEvent += SongFinish;
+                missionLevelGameplayManager.levelFinishedEvent += SongFinish;
             }
             UpdateText();
         }

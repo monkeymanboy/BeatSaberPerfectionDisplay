@@ -4,10 +4,11 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Text.RegularExpressions;
 using IPA;
 using System.Collections;
 using BeatSaberMarkupLanguage.Settings;
+using BeatSaberMarkupLanguage;
+using System.Reflection;
 
 namespace PerfectionDisplay
 {
@@ -16,10 +17,6 @@ namespace PerfectionDisplay
         public static string lastText = "";
         public static string lastPercent = "";
         public static string lastCount = "";
-
-        TextMeshProUGUI text;
-        TextMeshProUGUI percent;
-        TextMeshProUGUI count;
 
         public static TMP_FontAsset mainFont;
         GameScenesManager gameScenesManager = null;
@@ -31,13 +28,6 @@ namespace PerfectionDisplay
         public void OnApplicationQuit()
         {
         }
-        public void OnTransition()
-        {
-            if (text != null) text.text = lastText;
-            if (percent!= null) percent.text = lastPercent;
-            if (count != null) count.text = lastCount;
-        }
-        
 
         public void OnUpdate()
         {
@@ -62,13 +52,11 @@ namespace PerfectionDisplay
             if (gameScenesManager == null)
             {
                 gameScenesManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
-                if (gameScenesManager != null)
-                {
-                    gameScenesManager.transitionDidFinishEvent += OnTransition;
-                }
             }
-            if(scene.name == "MenuCore")
+            if(scene.name == "MenuViewControllers")
             {
+                if (_.name == "EmptyTransition")
+                    BSMLParser.instance.Parse(Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PerfectionDisplay.results.bsml"), Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault().gameObject, ResultsScreenText.instance);
                 BSMLSettings.instance.AddSettingsMenu("Perfection Display", "PerfectionDisplay.settings.bsml", Settings.instance);
                 MenuSceneActive();
             }
@@ -83,12 +71,17 @@ namespace PerfectionDisplay
         public void MenuSceneActive()
         {
             if (mainFont == null) gameScenesManager.StartCoroutine(FontHunter());
-            if (text != null) MonoBehaviour.Destroy(text);
-            if (percent != null) MonoBehaviour.Destroy(percent);
-            if (count != null) MonoBehaviour.Destroy(count);
+            ResultsScreenText.instance.Names = lastText;
+            ResultsScreenText.instance.Counts= lastCount;
+            ResultsScreenText.instance.Percents = lastPercent;
+            /*
+            if (text != null) GameObject.Destroy(text.gameObject);
+            if (percent != null) GameObject.Destroy(percent.gameObject);
+            if (count != null) GameObject.Destroy(count.gameObject);
             ResultsViewController results = Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
             int extraOffset = -12;
             text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+            MonoBehaviour.Destroy(text.GetComponentInChildren<LocalizedTextMeshProUGUI>());
             text.fontSize = 5;
             text.color = Color.white;
             text.lineSpacing = -15f;
@@ -97,6 +90,7 @@ namespace PerfectionDisplay
             text.alignment = TextAlignmentOptions.TopLeft;
             text.rectTransform.localPosition = new Vector3(-20 + extraOffset, 35, 0);
             percent = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+            MonoBehaviour.Destroy(text.GetComponentInChildren<LocalizedTextMeshProUGUI>());
             percent.fontSize = 5;
             percent.color = Color.white;
             percent.paragraphSpacing = -15f;
@@ -105,13 +99,14 @@ namespace PerfectionDisplay
             percent.alignment = TextAlignmentOptions.TopLeft;
             percent.rectTransform.localPosition = new Vector3(0 + extraOffset, 35, 0);
             count = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
+            MonoBehaviour.Destroy(text.GetComponentInChildren<LocalizedTextMeshProUGUI>());
             count.fontSize = 5;
             count.color = Color.white;
             count.lineSpacing = -15f;
             count.paragraphSpacing = -15f;
             count.text = lastPercent;
             count.alignment = TextAlignmentOptions.TopLeft;
-            count.rectTransform.localPosition = new Vector3(15 + extraOffset, 35, 0);
+            count.rectTransform.localPosition = new Vector3(15 + extraOffset, 35, 0);*/
         }
         //For some reason can't find the font right when scene loads so this will hunt it down
         public IEnumerator FontHunter()

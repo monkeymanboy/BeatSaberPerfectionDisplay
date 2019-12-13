@@ -1,11 +1,8 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BS_Utils.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace PerfectionDisplay
@@ -20,38 +17,26 @@ namespace PerfectionDisplay
         [UIValue("showCount")]
         public bool showCount
         {
-            get
-            {
-                return config.GetBool("In Game Display", "showCount");
-            }
-            set
-            {
-                config.SetBool("In Game Display", "showCount", value);
-            }
+            get => config.GetBool("In Game Display", "showCount");
+            set => config.SetBool("In Game Display", "showCount", value);
         }
         [UIValue("showPercentage")]
         public bool showPercentage
         {
-            get
-            {
-                return config.GetBool("In Game Display", "showPercentage");
-            }
-            set
-            {
-                config.SetBool("In Game Display", "showPercentage", value);
-            }
+            get => config.GetBool("In Game Display", "showPercentage");
+            set => config.SetBool("In Game Display", "showPercentage", value);
         }
         [UIValue("hitscoreIntegration")]
         public bool hitscoreIntegration
         {
-            get
-            {
-                return config.GetBool("General", "hitscoreIntegration", true);
-            }
-            set
-            {
-                config.SetBool("General", "hitscoreIntegration", value);
-            }
+            get => config.GetBool("General", "hitscoreIntegration", true);
+            set => config.SetBool("General", "hitscoreIntegration", value);
+        }
+        [UIValue("resultsButton")]
+        public bool resultsButton
+        {
+            get => config.GetBool("General", "resultsButton", false);
+            set => config.SetBool("General", "resultsButton", value);
         }
 
         public void Awake()
