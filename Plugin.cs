@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
+﻿using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -74,39 +72,6 @@ namespace PerfectionDisplay
             ResultsScreenText.instance.Names = lastText;
             ResultsScreenText.instance.Counts= lastCount;
             ResultsScreenText.instance.Percents = lastPercent;
-            /*
-            if (text != null) GameObject.Destroy(text.gameObject);
-            if (percent != null) GameObject.Destroy(percent.gameObject);
-            if (count != null) GameObject.Destroy(count.gameObject);
-            ResultsViewController results = Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
-            int extraOffset = -12;
-            text = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
-            MonoBehaviour.Destroy(text.GetComponentInChildren<LocalizedTextMeshProUGUI>());
-            text.fontSize = 5;
-            text.color = Color.white;
-            text.lineSpacing = -15f;
-            text.paragraphSpacing = -15f;
-            text.text = lastText;
-            text.alignment = TextAlignmentOptions.TopLeft;
-            text.rectTransform.localPosition = new Vector3(-20 + extraOffset, 35, 0);
-            percent = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
-            MonoBehaviour.Destroy(text.GetComponentInChildren<LocalizedTextMeshProUGUI>());
-            percent.fontSize = 5;
-            percent.color = Color.white;
-            percent.paragraphSpacing = -15f;
-            percent.lineSpacing = -15f;
-            percent.text = lastCount;
-            percent.alignment = TextAlignmentOptions.TopLeft;
-            percent.rectTransform.localPosition = new Vector3(0 + extraOffset, 35, 0);
-            count = MonoBehaviour.Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().Last(x => (x.name == "Title")), results.transform, false);
-            MonoBehaviour.Destroy(text.GetComponentInChildren<LocalizedTextMeshProUGUI>());
-            count.fontSize = 5;
-            count.color = Color.white;
-            count.lineSpacing = -15f;
-            count.paragraphSpacing = -15f;
-            count.text = lastPercent;
-            count.alignment = TextAlignmentOptions.TopLeft;
-            count.rectTransform.localPosition = new Vector3(15 + extraOffset, 35, 0);*/
         }
         //For some reason can't find the font right when scene loads so this will hunt it down
         public IEnumerator FontHunter()
