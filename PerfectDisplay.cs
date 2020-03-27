@@ -126,7 +126,7 @@ namespace PerfectionDisplay
             {
                 if (didDone) return;
                 didDone = true;
-                ScoreController.RawScoreWithoutMultiplier(info, out int before, out int after, out int distScore);
+                ScoreModel.RawScoreWithoutMultiplier(info, out int before, out int after, out int distScore);
                 int total = before + after + distScore;
                 for (int i = 0; i < scoreRanges.Length; i++)
                 {
