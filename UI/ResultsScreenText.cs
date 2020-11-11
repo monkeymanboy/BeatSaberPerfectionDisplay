@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿/*using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using BeatSaberMarkupLanguage.Attributes;
 using JetBrains.Annotations;
@@ -89,4 +89,4 @@ namespace PerfectionDisplay.UI
 
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
-}
+}*/

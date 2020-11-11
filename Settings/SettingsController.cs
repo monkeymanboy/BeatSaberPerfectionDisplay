@@ -1,4 +1,5 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
+using Zenject;
 
 namespace PerfectionDisplay.Settings
 {
@@ -6,6 +7,7 @@ namespace PerfectionDisplay.Settings
 	{
 		private readonly Configuration _configuration;
 
+		[Inject]
 		public SettingsController(Configuration configuration)
 		{
 			_configuration = configuration;
@@ -25,7 +27,7 @@ namespace PerfectionDisplay.Settings
 			set => _configuration.ShowPercentage = value;
 		}
 
-		[UIValue("hitscoreIntegration")]
+		[UIValue("hsvIntegration")]
 		public bool HSVIntegration
 		{
 			get => _configuration.HSVIntegration;

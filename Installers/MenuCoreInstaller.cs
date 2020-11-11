@@ -1,4 +1,6 @@
 ﻿using PerfectionDisplay.Settings;
+using PerfectionDisplay.UI;
+using SiraUtil;
 using SiraUtil.Tools;
 using Zenject;
 
@@ -15,8 +17,11 @@ namespace PerfectionDisplay.Installers
 
 		public override void InstallBindings()
 		{
+			_logger.Debug($"Binding {nameof(PerfectionDisplayResultsViewController)}");
+			Container.BindViewController<PerfectionDisplayResultsViewController>();
+
 			_logger.Debug($"Binding {nameof(SettingsController)}");
-			Container.BindInterfacesAndSelfTo<SettingsController>().AsSingle();
+			Container.Bind<SettingsController>().AsSingle();
 
 			_logger.Debug($"Binding {nameof(SettingsControllerManager)}");
 			Container.BindInterfacesAndSelfTo<SettingsControllerManager>().AsSingle();

@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using IPA;
-using IPA.Loader;
-using ModestTree;
+﻿using ModestTree;
+using PerfectionDisplay.Models;
 using PerfectionDisplay.Settings;
 using SiraUtil.Tools;
 using UnityEngine;
@@ -9,12 +7,12 @@ using Zenject;
 
 namespace PerfectionDisplay.Services
 {
-	public class ScoresTracker
+	internal class ScoresTracker
 	{
 		private readonly SiraLog _logger;
+		private readonly ScoreProxyService _scoreProxyService;
 		private readonly ScoreController _scoreController;
 		private readonly ILevelEndActions _levelEndActions;
-		private readonly HitScoreVisualizer.Services.ConfigProvider? _configProvider;
 
 		private int _misses = 0;
 		private int _notes = 0;
@@ -23,17 +21,21 @@ namespace PerfectionDisplay.Services
 		private int[] _scoreRanges;
 		private string[] _hitScoreNames;
 		private string[] _colors;
+
 		private int[] _scoreCount;
+
 		//private DisplaySection[] _sections;
 		private bool _showNumbers = false;
 		private bool _showPercent = false;
-		private bool _shouldHitscore = true;
+		private readonly bool _shouldHitScore;
 
 
 		[Inject]
-		public ScoresTracker(SiraLog logger, ScoreController scoreController, ILevelEndActions levelEndActions, Configuration configuration, [InjectOptional] HitScoreVisualizer.Services.ConfigProvider? configProvider)
+		public ScoresTracker(SiraLog logger, ScoreProxyService scoreProxyService, ScoreController scoreController, ILevelEndActions levelEndActions,
+			Configuration configuration, [InjectOptional] HSVConfigProvider? configProvider)
 		{
 			_logger = logger;
+			_scoreProxyService = scoreProxyService;
 
 			_logger.Debug("Entered ScoreTracker constructor");
 
@@ -42,26 +44,32 @@ namespace PerfectionDisplay.Services
 			Assert.IsNotNull(levelEndActions, "levelEndActions was null I guess?");
 			_levelEndActions = levelEndActions;
 			Assert.IsNotNull(configProvider, "configProvider was null I guess?");
-			_configProvider = configProvider;
 
 			_logger.Debug("Constructed ScoreTracker");
 
 			_scoreController.noteWasCutEvent += OnNoteCut;
 			_scoreController.noteWasMissedEvent += OnNoteMiss;
 
-			_levelEndActions.levelFailedEvent += OnLevelExit;
-			_levelEndActions.levelFinishedEvent += OnLevelExit;
+			_levelEndActions.levelFailedEvent += OnSongFailed;
+			_levelEndActions.levelFinishedEvent += OnSongFinished;
 
-			var hsvConfig = configProvider?.GetCurrentConfig();
-			if (configuration.HSVIntegration && hsvConfig != null)
+
+			_displayPosition = configuration.Position;
+			_scoreRanges = configuration.ScoreRanges.ToArray();
+			_colors = configuration.Colors.ToArray();
+			_shouldHitScore = configuration.HSVIntegration;
+			if (_shouldHitScore && configProvider != null)
 			{
-
+				_shouldHitScore = configProvider.Enrich(ref _scoreRanges, ref _hitScoreNames, ref _colors);
 			}
 			else
 			{
-
+				_shouldHitScore = false;
 			}
-			//LoadConfig()
+
+			_showNumbers = configuration.ShowCount;
+			_showPercent = configuration.ShowPercentage;
+			_scoreCount = new int[_scoreRanges.Length + 1];
 		}
 
 		private void OnNoteMiss(NoteData noteData, int multiplier)
@@ -152,45 +160,60 @@ namespace PerfectionDisplay.Services
 			_sections[_scoreRanges.Length + 1].UpdatePosition(-(width / 2) + curX);*/
 		}
 
-		private void OnLevelExit()
+		private void OnSongFailed()
+		{
+			OnLevelExit(LevelCompletionResults.LevelEndStateType.Failed);
+		}
+
+		private void OnSongFinished()
+		{
+			OnLevelExit(LevelCompletionResults.LevelEndStateType.Cleared);
+		}
+
+		private void OnLevelExit(LevelCompletionResults.LevelEndStateType levelEndStateType)
 		{
 			_scoreController.noteWasCutEvent -= OnNoteCut;
 			_scoreController.noteWasMissedEvent -= OnNoteMiss;
 
-			_levelEndActions.levelFailedEvent -= OnLevelExit;
-			_levelEndActions.levelFinishedEvent -= OnLevelExit;
+			_levelEndActions.levelFailedEvent -= OnSongFailed;
+			_levelEndActions.levelFinishedEvent -= OnSongFinished;
 
 			_logger.Logger.Trace($"Level exit, total misses: {_misses}, total notes: {_notes}");
 
-			/*Plugin.lastText = "Range\n";
+			var lastText = "Range\n";
 			for (var i = 0; i < _scoreRanges.Length; i++)
 			{
-				Plugin.lastText += "<color=" + _colors[i] + ">" + (_shouldHitscore ? _hitScoreNames[i] : (">" + _scoreRanges[i])) + "\n";
+				lastText += "<color=" + _colors[i] + ">" + (_shouldHitScore ? _hitScoreNames[i] : (">" + _scoreRanges[i])) + "\n";
 			}
 
-			Plugin.lastText += "<color=" + _colors[_scoreRanges.Length] + ">" + (_shouldHitscore ? _hitScoreNames[_scoreRanges.Length] : ("<" + _scoreRanges[_scoreRanges.Length - 1])) + "\n";
-			Plugin.lastText += "<color=" + _colors[_scoreRanges.Length + 1] + ">" + "MISS";
-			Plugin.lastCount = "Count\n";
+			lastText += "<color=" + _colors[_scoreRanges.Length] + ">" + (_shouldHitScore ? _hitScoreNames[_scoreRanges.Length] : ("<" + _scoreRanges[_scoreRanges.Length - 1])) + "\n";
+			lastText += "<color=" + _colors[_scoreRanges.Length + 1] + ">" + "MISS";
+
+			var lastCount = "Count\n";
 			for (var i = 0; i < _scoreRanges.Length; i++)
 			{
-				Plugin.lastCount += "<color=" + _colors[i] + ">" + _scoreCount[i] + "\n";
+				lastCount += "<color=" + _colors[i] + ">" + _scoreCount[i] + "\n";
 			}
 
-			Plugin.lastCount += "<color=" + _colors[_scoreRanges.Length] + ">" + _scoreCount[_scoreRanges.Length] + "\n";
-			Plugin.lastCount += "<color=" + _colors[_scoreRanges.Length + 1] + ">" + _misses;
-			Plugin.lastPercent = "Percent\n";
+			lastCount += $"<color={_colors[_scoreRanges.Length]}>{_scoreCount[_scoreRanges.Length]}\n" +
+			             $"<color={_colors[_scoreRanges.Length + 1]}>{_misses}";
+
+			var lastPercent = "Percent\n";
 			for (var i = 0; i < _scoreRanges.Length; i++)
 			{
-				Plugin.lastPercent += "<color=" + _colors[i] + ">" + GetPercent(_scoreCount[i]) + "%\n";
+				lastPercent += $"<color={_colors[i]}>{GetPercent(_scoreCount[i])}%\n";
 			}
 
-			Plugin.lastPercent += "<color=" + _colors[_scoreRanges.Length] + ">" + GetPercent(_scoreCount[_scoreRanges.Length]) + "%\n";
-			Plugin.lastPercent += "<color=" + _colors[_scoreRanges.Length + 1] + ">" + GetPercent(_misses) + "%";*/
+			lastPercent += $"<color={_colors[_scoreRanges.Length]}>{GetPercent(_scoreCount[_scoreRanges.Length])}%\n" +
+			               $"<color={_colors[_scoreRanges.Length + 1]}>{GetPercent(_misses)}%";
+
+			_logger.Logger.Trace("Notifying song ended with scores");
+			_scoreProxyService.NotifySongEnded(this, new SongEndedEventArgs {State = levelEndStateType, Names = lastText, Percents = lastPercent, Counts = lastCount});
 		}
 
 		private string GetPercent(int hits)
 		{
-			return hits == 0 ? "0" : (((float)hits / _notes) * 100).ToString("0.0");
+			return hits == 0 ? "0" : (((float) hits / _notes) * 100).ToString("0.0");
 		}
 	}
 }
