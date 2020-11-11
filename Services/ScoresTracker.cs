@@ -39,11 +39,8 @@ namespace PerfectionDisplay.Services
 
 			_logger.Debug("Entered ScoreTracker constructor");
 
-			Assert.IsNotNull(scoreController, "ScoreController was null I guess?");
 			_scoreController = scoreController;
-			Assert.IsNotNull(levelEndActions, "levelEndActions was null I guess?");
 			_levelEndActions = levelEndActions;
-			Assert.IsNotNull(configProvider, "configProvider was null I guess?");
 
 			_logger.Debug("Constructed ScoreTracker");
 
