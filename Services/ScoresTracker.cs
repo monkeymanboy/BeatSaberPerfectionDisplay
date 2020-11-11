@@ -114,17 +114,19 @@ namespace PerfectionDisplay.Services
 				_logger.Logger.Trace($"Decent cut, score: {total}, total notes: {_notes}");
 
 
-				/*for (var i = 0; i < _scoreRanges.Length; i++)
+				for (var i = 0; i < _scoreRanges.Length; i++)
 				{
-					if (_scoreRanges[i] < total)
+					if (_scoreRanges[i] >= total)
 					{
-						_scoreCount[i]++;
-						UpdateText();
-						return;
+						continue;
 					}
+
+					_scoreCount[i]++;
+					UpdateText();
+					return;
 				}
 
-				_scoreCount[_scoreRanges.Length]++;*/
+				_scoreCount[_scoreRanges.Length]++;
 				UpdateText();
 			};
 		}
