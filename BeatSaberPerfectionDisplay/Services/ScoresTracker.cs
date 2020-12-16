@@ -1,5 +1,4 @@
-﻿using ModestTree;
-using PerfectionDisplay.Models;
+﻿using PerfectionDisplay.Models;
 using PerfectionDisplay.Settings;
 using SiraUtil.Tools;
 using UnityEngine;
@@ -57,7 +56,7 @@ namespace PerfectionDisplay.Services
 			_shouldHitScore = configuration.HSVIntegration;
 			if (_shouldHitScore && configProvider != null)
 			{
-				_shouldHitScore = configProvider.Enrich(ref _scoreRanges, ref _hitScoreNames, ref _colors);
+				_shouldHitScore = configProvider.Enrich(ref _scoreRanges, ref _hitScoreNames!, ref _colors);
 			}
 			else
 			{

@@ -51,7 +51,7 @@ namespace PerfectionDisplay.UI
 
 		private void OnSongEnded(object sender, SongEndedEventArgs e)
 		{
-			if (sender is not ScoresTracker)
+			if (!(sender is ScoresTracker))
 			{
 				return;
 			}
