@@ -1,6 +1,7 @@
 <settings-container>
-	<!--<bool-setting text='Show Count' value='showCount'/>
-	<bool-setting text='Show Percentage' value='showPercentage'/>-->
+	<!-- TODO: Disabled until in-game hit counting has been reimplemented -->
+	<!--<bool-setting text='Show Count' value='showCount'/>-->
+	<!--<bool-setting text='Show Percentage' value='showPercentage'/>-->
 	<bool-setting text='HitscoreVisualizer Integration' value='hsvIntegration'/>
 	<bool-setting text='Results Button' hover-hint='This will add a button to view your results rather than it being directly on the screen' value='resultsButton'/>
 	<horizontal>

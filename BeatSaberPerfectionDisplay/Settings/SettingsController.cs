@@ -13,7 +13,8 @@ namespace PerfectionDisplay.Settings
 			_configuration = configuration;
 		}
 
-		[UIValue("showCount")]
+		// Disabled until in-game hit counting has been reimplemented
+		/*[UIValue("showCount")]
 		public bool ShowCount
 		{
 			get => _configuration.ShowCount;
@@ -25,7 +26,7 @@ namespace PerfectionDisplay.Settings
 		{
 			get => _configuration.ShowPercentage;
 			set => _configuration.ShowPercentage = value;
-		}
+		}*/
 
 		[UIValue("hsvIntegration")]
 		public bool HSVIntegration
