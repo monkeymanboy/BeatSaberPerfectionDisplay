@@ -9,7 +9,7 @@ using UnityEngine;
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace PerfectionDisplay.Settings
 {
-	public class Configuration
+	internal class Configuration
 	{
 		internal static Configuration? Instance { get; set; }
 
