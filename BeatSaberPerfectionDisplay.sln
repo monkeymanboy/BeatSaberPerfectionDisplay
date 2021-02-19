@@ -1,6 +1,6 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberPerfectionDisplay", "BeatSaberPerfectionDisplay\Perfection Display.csproj", "{A1BA4F12-3244-4C53-8BB3-C81775A890E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberPerfectionDisplay", "BeatSaberPerfectionDisplay\PerfectionDisplay.csproj", "{A1BA4F12-3244-4C53-8BB3-C81775A890E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

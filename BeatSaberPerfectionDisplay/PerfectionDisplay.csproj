@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
-        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <RootNamespace>PerfectionDisplay</RootNamespace>
         <AssemblyName>Perfect Display</AssemblyName>
     </PropertyGroup>
@@ -93,7 +93,7 @@
 	<ItemGroup>
 		<None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
 		<None Include="Directory.Build.targets" Condition="Exists('Directory.Build.targets')" />
-		<None Include="Perfection Display.csproj.user" Condition="Exists('Perfection Display.csproj.user')" />
+		<None Include="PerfectionDisplay.csproj.user" Condition="Exists('PerfectionDisplay.csproj.user')" />
 	</ItemGroup>
 
 	<ItemGroup>
