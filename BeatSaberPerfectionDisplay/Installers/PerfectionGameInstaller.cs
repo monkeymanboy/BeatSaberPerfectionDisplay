@@ -4,11 +4,11 @@ using Zenject;
 
 namespace PerfectionDisplay.Installers
 {
-	public class GameCoreInstaller : Installer<GameCoreInstaller>
+	public class PerfectionGameInstaller : Installer<PerfectionGameInstaller>
 	{
 		private readonly SiraLog _logger;
 
-		public GameCoreInstaller(SiraLog logger)
+		public PerfectionGameInstaller(SiraLog logger)
 		{
 			_logger = logger;
 		}

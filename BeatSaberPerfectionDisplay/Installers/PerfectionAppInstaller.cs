@@ -10,11 +10,11 @@ using Config = IPA.Config.Config;
 
 namespace PerfectionDisplay.Installers
 {
-	public class AppCoreInstaller : Installer<Logger, AppCoreInstaller>
+	public class PerfectionAppInstaller : Installer<Logger, PerfectionAppInstaller>
 	{
 		private readonly Logger _logger;
 
-		public AppCoreInstaller(Logger logger)
+		public PerfectionAppInstaller(Logger logger)
 		{
 			_logger = logger;
 		}

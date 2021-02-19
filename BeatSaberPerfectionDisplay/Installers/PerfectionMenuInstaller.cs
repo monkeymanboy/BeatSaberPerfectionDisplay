@@ -6,11 +6,11 @@ using Zenject;
 
 namespace PerfectionDisplay.Installers
 {
-	public class MenuCoreInstaller : Installer<MenuCoreInstaller>
+	public class PerfectionMenuInstaller : Installer<PerfectionMenuInstaller>
 	{
 		private readonly SiraLog _logger;
 
-		public MenuCoreInstaller(SiraLog logger)
+		public PerfectionMenuInstaller(SiraLog logger)
 		{
 			_logger = logger;
 		}
@@ -18,13 +18,13 @@ namespace PerfectionDisplay.Installers
 		public override void InstallBindings()
 		{
 			_logger.Debug($"Binding {nameof(PerfectionDisplayResultsViewController)}");
-			Container.BindViewController<PerfectionDisplayResultsViewController>();
+			Container.Bind<PerfectionDisplayResultsViewController>().FromNewComponentAsViewController().AsSingle();
 
 			_logger.Debug($"Binding {nameof(SettingsController)}");
 			Container.Bind<SettingsController>().AsSingle();
 
 			_logger.Debug($"Binding {nameof(SettingsControllerManager)}");
-			Container.BindInterfacesAndSelfTo<SettingsControllerManager>().AsSingle();
+			Container.BindInterfacesTo<SettingsControllerManager>().AsSingle();
 		}
 	}
 }

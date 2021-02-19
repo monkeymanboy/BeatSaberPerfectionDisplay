@@ -23,9 +23,9 @@ namespace PerfectionDisplay
 		{
 			_metadata = metaData;
 
-			zenject.OnApp<AppCoreInstaller>().WithParameters(logger);
-			zenject.OnMenu<MenuCoreInstaller>().OnlyForStandard();
-			zenject.OnGame<GameCoreInstaller>()
+			zenject.OnApp<PerfectionAppInstaller>().WithParameters(logger);
+			zenject.OnMenu<PerfectionMenuInstaller>().OnlyForStandard();
+			zenject.OnGame<PerfectionGameInstaller>()
 				.OnlyForStandard();
 		}
 
