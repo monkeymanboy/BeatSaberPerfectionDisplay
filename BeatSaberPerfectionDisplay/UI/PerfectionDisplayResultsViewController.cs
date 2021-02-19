@@ -13,10 +13,10 @@ namespace PerfectionDisplay.UI
 {
 	internal class PerfectionDisplayResultsViewController : BSMLAutomaticViewController
 	{
-		private SiraLog _logger;
-		private Configuration _configuration;
-		private ResultsViewController _resultsViewController;
-		private ScoreProxyService _scoreProxyService;
+		private SiraLog _logger = null!;
+		private Configuration _configuration = null!;
+		private ResultsViewController _resultsViewController = null!;
+		private ScoreProxyService _scoreProxyService = null!;
 
 		[Inject]
 		internal void Construct(SiraLog logger, Configuration configuration, ResultsViewController resultsViewController, ScoreProxyService scoreProxyService)
