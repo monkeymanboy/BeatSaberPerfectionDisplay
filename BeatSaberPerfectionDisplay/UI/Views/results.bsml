@@ -1,0 +1,21 @@
+<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+	<macro.if value='modal-enabled'>
+		<button text='~modal-button' click-event='show-scores' anchor-pos-x="35" anchor-pos-y='~modal-button-pos-y' align="Center">
+			<modal show-event='show-scores' click-off-closes='true' move-to-center='false' size-delta-x='50' size-delta-y='60'>
+				<horizontal vertical-fit='Unconstrained' horizontal-fit="PreferredSize" size-delta-x='-3' size-delta-y='-3' spacing="2">
+					<text id='name-mesh' text='~names' rich-text='true' align='TopLeft'/>
+					<text id='percent-mesh' text='~percents' rich-text='true' align='TopLeft'/>
+					<text id='count-mesh' text='~counts' rich-text='true' align='TopLeft'/>
+				</horizontal>
+			</modal>
+		</button>
+	</macro.if>
+	<macro.if value='!modal-enabled'>
+		<horizontal vertical-fit='Unconstrained' horizontal-fit="PreferredSize" anchor-pos-x="-80" spacing="4">
+			<text id='name-mesh' text='~names' rich-text='true' align='TopLeft'/>
+			<text id='percent-mesh' text='~percents' rich-text='true' align='TopLeft'/>
+			<text id='count-mesh' text='~counts' rich-text='true' align='TopLeft'/>
+		</horizontal>
+	</macro.if>
+</bg>
