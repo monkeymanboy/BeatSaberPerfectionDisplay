@@ -1,8 +1,8 @@
 ﻿using IPA;
-using System.Reflection;
-using IPA.Loader;
+using IPA.Config;
+using IPA.Config.Stores;
 using PerfectionDisplay.Installers;
-using SemVer;
+using PerfectionDisplay.Settings;
 using SiraUtil.Zenject;
 using Logger = IPA.Logging.Logger;
 
@@ -11,19 +11,10 @@ namespace PerfectionDisplay
 	[Plugin(RuntimeOptions.DynamicInit)]
 	public class Plugin
 	{
-		private static PluginMetadata? _metadata;
-		private static string? _name;
-		private static Version? _version;
-
-		public static string Name => _name ??= _metadata?.Name ?? Assembly.GetExecutingAssembly().GetName().Name;
-		public static Version Version => _version ??= _metadata?.Version ?? new Version(Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
-
 		[Init]
-		public void Init(Logger logger, PluginMetadata metaData, Zenjector zenject)
+		public void Init(Logger logger, Config config, Zenjector zenject)
 		{
-			_metadata = metaData;
-
-			zenject.OnApp<PerfectionAppInstaller>().WithParameters(logger);
+			zenject.OnApp<PerfectionAppInstaller>().WithParameters(logger, config.Generated<Configuration>());
 			zenject.OnMenu<PerfectionMenuInstaller>().OnlyForStandard();
 			zenject.OnGame<PerfectionGameInstaller>()
 				.OnlyForStandard();

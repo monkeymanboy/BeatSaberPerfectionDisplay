@@ -11,8 +11,6 @@ namespace PerfectionDisplay.Settings
 {
 	internal class Configuration
 	{
-		internal static Configuration? Instance { get; set; }
-
 		// General settings
 		[NonNullable]
 		[UseConverter(typeof(Vector3Converter))]

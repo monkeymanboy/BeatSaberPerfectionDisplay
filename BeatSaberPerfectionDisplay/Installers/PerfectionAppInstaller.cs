@@ -1,39 +1,33 @@
-﻿using IPA.Config.Stores;
-using IPA.Loader;
+﻿using IPA.Loader;
 using IPA.Logging;
 using PerfectionDisplay.Services;
 using PerfectionDisplay.Settings;
 using SemVer;
 using SiraUtil;
 using Zenject;
-using Config = IPA.Config.Config;
 
 namespace PerfectionDisplay.Installers
 {
-	public class PerfectionAppInstaller : Installer<Logger, PerfectionAppInstaller>
+	internal class PerfectionAppInstaller : Installer<Logger, Configuration, PerfectionAppInstaller>
 	{
 		private readonly Logger _logger;
+		private readonly Configuration _configuration;
 
-		public PerfectionAppInstaller(Logger logger)
+		public PerfectionAppInstaller(Logger logger, Configuration configuration)
 		{
 			_logger = logger;
+			_configuration = configuration;
 		}
 
 		public override void InstallBindings()
 		{
-			_logger.Debug("Binding logger");
 			Container.BindLoggerAsSiraLogger(_logger);
-
-			_logger.Debug($"Binding {nameof(Configuration)}");
-			Configuration.Instance ??= Config.GetConfigFor(Plugin.Name).Generated<Configuration>();
-			Container.BindInstance(Configuration.Instance).AsSingle();
-
+			Container.BindInstance(_configuration).AsSingle();
 			Container.Bind<ScoreProxyService>().AsSingle();
 
 			var hsvPluginMetaData = PluginManager.GetPluginFromId("HitScoreVisualizer");
 			if (hsvPluginMetaData != null && hsvPluginMetaData.Version >= new Version(3, 0, 2))
 			{
-				_logger.Debug($"Binding {nameof(HSVConfigProvider)}");
 				Container.Bind<HSVConfigProvider>().AsSingle();
 			}
 		}
