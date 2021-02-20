@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
@@ -11,7 +12,7 @@ using Zenject;
 
 namespace PerfectionDisplay.UI
 {
-	internal class PerfectionDisplayResultsViewController : BSMLAutomaticViewController
+	internal class PerfectionDisplayResultsViewController : BSMLAutomaticViewController, IInitializable, IDisposable
 	{
 		private SiraLog _logger = null!;
 		private Configuration _configuration = null!;
@@ -27,7 +28,7 @@ namespace PerfectionDisplay.UI
 			_resultsViewController = resultsViewController;
 		}
 
-		public void Start()
+		public void Initialize()
 		{
 			if (_resultsViewController == null)
 			{
@@ -39,13 +40,10 @@ namespace PerfectionDisplay.UI
 
 			BSMLParser.instance.Parse(Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PerfectionDisplay.UI.Views.results.bsml"), _resultsViewController.gameObject, this);
 
-			_scoreProxyService.SongEnded += OnSongEnded;
-		}
+			_scoreProxyService.SongEnded += OnSongEnded;		}
 
-		protected override void OnDestroy()
+		public void Dispose()
 		{
-			base.OnDestroy();
-
 			_scoreProxyService.SongEnded -= OnSongEnded;
 		}
 
