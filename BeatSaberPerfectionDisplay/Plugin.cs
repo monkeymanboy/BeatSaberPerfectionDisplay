@@ -1,10 +1,10 @@
 ﻿using IPA;
 using IPA.Config;
 using IPA.Config.Stores;
+using IPA.Logging;
 using PerfectionDisplay.Installers;
 using PerfectionDisplay.Settings;
 using SiraUtil.Zenject;
-using Logger = IPA.Logging.Logger;
 
 namespace PerfectionDisplay
 {
@@ -12,12 +12,13 @@ namespace PerfectionDisplay
 	public class Plugin
 	{
 		[Init]
-		public void Init(Logger logger, Config config, Zenjector zenject)
+		public Plugin(Logger logger, Config config, Zenjector zenject)
 		{
-			zenject.OnApp<PerfectionAppInstaller>().WithParameters(logger, config.Generated<Configuration>());
-			zenject.OnMenu<PerfectionMenuInstaller>().OnlyForStandard();
-			zenject.OnGame<PerfectionGameInstaller>()
-				.OnlyForStandard();
+			zenject.UseLogger(logger);
+
+			zenject.Install<PerfectionAppInstaller>(Location.App, config.Generated<Configuration>());
+			zenject.Install<PerfectionMenuInstaller>(Location.Menu);
+			zenject.Install<PerfectionGameInstaller>(Location.StandardPlayer);
 		}
 
 		[OnEnable, OnDisable]
@@ -25,10 +26,5 @@ namespace PerfectionDisplay
 		{
 			// SiraUtil handles this for me, but just adding an empty body method to prevent warnings in the logs ^^
 		}
-
-		/*private void MenuSceneFresh()
-		{
-			mainFont = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(t => t.font?.name == "Teko-Medium SDF No Glow")?.font;
-		}*/
 	}
 }

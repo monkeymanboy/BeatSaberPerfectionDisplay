@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
 using IPA.Config.Stores.Attributes;
 using IPA.Config.Stores.Converters;
-using SiraUtil.Converters;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
@@ -13,7 +12,7 @@ namespace PerfectionDisplay.Settings
 	{
 		// General settings
 		[NonNullable]
-		[UseConverter(typeof(Vector3Converter))]
+		[UseConverter]
 		public virtual Vector3 Position { get; set; } = new Vector3(0f, 2.3f, 7f);
 
 		[NonNullable]

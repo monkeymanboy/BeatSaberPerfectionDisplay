@@ -6,7 +6,7 @@ using BeatSaberMarkupLanguage.ViewControllers;
 using PerfectionDisplay.Models;
 using PerfectionDisplay.Services;
 using PerfectionDisplay.Settings;
-using SiraUtil.Tools;
+using SiraUtil.Logging;
 using TMPro;
 using Zenject;
 
@@ -32,11 +32,11 @@ namespace PerfectionDisplay.UI
 		{
 			if (_resultsViewController == null)
 			{
-				_logger.Warning($"{_resultsViewController} is null, not adding PerfectionDisplay");
+				_logger.Warn($"{_resultsViewController} is null, not adding PerfectionDisplay");
 				return;
 			}
 
-			_logger.Logger.Trace($"{_resultsViewController.GetType().FullName}");
+			_logger.Trace($"{_resultsViewController.GetType().FullName}");
 
 			BSMLParser.instance.Parse(Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PerfectionDisplay.UI.Views.results.bsml"), _resultsViewController.gameObject, this);
 
@@ -54,7 +54,7 @@ namespace PerfectionDisplay.UI
 				return;
 			}
 
-			_logger.Logger.Trace("Received song ended with scores");
+			_logger.Trace("Received song ended with scores");
 
 			ModalButtonPositionY = e.State == LevelCompletionResults.LevelEndStateType.Cleared ? 49 : 38;
 			Names = e.Names;

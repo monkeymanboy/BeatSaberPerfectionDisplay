@@ -3,7 +3,6 @@ using IPA.Logging;
 using PerfectionDisplay.Services;
 using PerfectionDisplay.Settings;
 using SemVer;
-using SiraUtil;
 using Zenject;
 
 namespace PerfectionDisplay.Installers
@@ -21,8 +20,8 @@ namespace PerfectionDisplay.Installers
 
 		public override void InstallBindings()
 		{
-			Container.BindLoggerAsSiraLogger(_logger);
 			Container.BindInstance(_configuration).AsSingle();
+
 			Container.Bind<ScoreProxyService>().AsSingle();
 
 			var hsvPluginMetaData = PluginManager.GetPluginFromId("HitScoreVisualizer");

@@ -1,6 +1,6 @@
 ﻿using PerfectionDisplay.Models;
 using PerfectionDisplay.Settings;
-using SiraUtil.Tools;
+using SiraUtil.Logging;
 using UnityEngine;
 using Zenject;
 
@@ -79,7 +79,7 @@ namespace PerfectionDisplay.Services
 			_misses++;
 			_notes++;
 
-			_logger.Logger.Trace($"Missed note, total misses: {_misses}, total notes: {_notes}");
+			_logger.Trace($"Missed note, total misses: {_misses}, total notes: {_notes}");
 
 			UpdateText();
 		}
@@ -92,7 +92,7 @@ namespace PerfectionDisplay.Services
 			{
 				_misses++;
 
-				_logger.Logger.Trace($"Bad cut, total misses: {_misses}, total notes: {_notes}");
+				_logger.Trace($"Bad cut, total misses: {_misses}, total notes: {_notes}");
 
 				UpdateText();
 				return;
@@ -110,8 +110,7 @@ namespace PerfectionDisplay.Services
 				ScoreModel.RawScoreWithoutMultiplier(noteCutInfo, out var before, out var after, out var distScore);
 				var total = before + after + distScore;
 
-				_logger.Logger.Trace($"Decent cut, score: {total}, total notes: {_notes}");
-
+				_logger.Trace($"Decent cut, score: {total}, total notes: {_notes}");
 
 				for (var i = 0; i < _scoreRanges.Length; i++)
 				{
@@ -176,7 +175,7 @@ namespace PerfectionDisplay.Services
 			_levelEndActions.levelFailedEvent -= OnSongFailed;
 			_levelEndActions.levelFinishedEvent -= OnSongFinished;
 
-			_logger.Logger.Trace($"Level exit, total misses: {_misses}, total notes: {_notes}");
+			_logger.Trace($"Level exit, total misses: {_misses}, total notes: {_notes}");
 
 			var lastText = "Range\n";
 			for (var i = 0; i < _scoreRanges.Length; i++)
@@ -205,7 +204,7 @@ namespace PerfectionDisplay.Services
 			lastPercent += $"<color={_colors[_scoreRanges.Length]}>{GetPercent(_scoreCount[_scoreRanges.Length])}%\n" +
 			               $"<color={_colors[_scoreRanges.Length + 1]}>{GetPercent(_misses)}%";
 
-			_logger.Logger.Trace("Notifying song ended with scores");
+			_logger.Trace("Notifying song ended with scores");
 			_scoreProxyService.NotifySongEnded(this, new SongEndedEventArgs {State = levelEndStateType, Names = lastText, Percents = lastPercent, Counts = lastCount});
 		}
 
