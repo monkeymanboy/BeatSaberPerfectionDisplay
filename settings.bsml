@@ -1,9 +1,0 @@
-<settings-container>
-  <bool-setting text='Show Count' value='showCount'></bool-setting>
-  <bool-setting text='Show Percentage' value='showPercentage'></bool-setting>
-  <bool-setting text='HitscoreVisualizer Integration' value='hitscoreIntegration'></bool-setting>
-  <bool-setting text='Results Button' hover-hint='This will add a button to view your results rather than it being directly on the screen' value='resultsButton'></bool-setting>
-  <horizontal>
-    <text text='If you change results button please press OK to see the change'></text>
-  </horizontal>
-</settings-container>

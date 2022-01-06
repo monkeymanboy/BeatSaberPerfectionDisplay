@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/beat-saber-modding-group/BSIPA-MetadataFileSchema/master/Schema.json",
+	"author": "monkeymanboy",
+	"description": "Adds more info to the results screen and during gameplay if enabled. Will use HitScoreVisualizer config if you have the plugin and integration is enabled.",
+	"gameVersion": "1.13.2",
+	"id": "PerfectionDisplay",
+	"name": "Perfection Display",
+	"version": "1.10.0-rc1",
+	"dependsOn": {
+		"BeatSaberMarkupLanguage": "^1.6.0",
+		"BSIPA": "^4.1.4",
+		"SiraUtil": "^3.0.0"
+	}
+}
